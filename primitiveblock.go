@@ -1,34 +1,34 @@
 package osm
 
 import (
-	"github.com/murphy214/pbf"
+	"github.com/flywave/go-pbf"
 )
 
 type PrimitiveBlock struct {
-	StringTable []string
+	StringTable [][]byte
 	GroupIndex  [2]int
 	GroupType   int
-	Buf         *pbf.PBF
+	Buf         *pbf.Reader
 	Config      Config
 }
 
-func NewPrimitiveBlock(pbfval *pbf.PBF) *PrimitiveBlock {
+func NewPrimitiveBlock(pbfval *pbf.Reader) *PrimitiveBlock {
 	primblock := &PrimitiveBlock{}
-	key, val := pbfval.ReadKey()
+	key, val := pbfval.ReadTag()
 	if key == 1 && val == 2 {
 		size := pbfval.ReadVarint()
 		endpos := pbfval.Pos + size
 		for pbfval.Pos < endpos {
-			_, _ = pbfval.ReadKey()
-			primblock.StringTable = append(primblock.StringTable, pbfval.ReadString())
+			_, _ = pbfval.ReadTag()
+			primblock.StringTable = append(primblock.StringTable, []byte(pbfval.ReadString()))
 		}
 
 		pbfval.Pos = endpos
-		key, val = pbfval.ReadKey()
+		key, val = pbfval.ReadTag()
 	}
 	if key == 2 && val == 2 {
 		endpos := pbfval.Pos + pbfval.ReadVarint()
-		grouptype, _ := pbfval.ReadKey()
+		grouptype, _ := pbfval.ReadTag()
 		if grouptype == 2 {
 			pbfval.ReadVarint()
 		} else if grouptype == 3 {
@@ -39,7 +39,7 @@ func NewPrimitiveBlock(pbfval *pbf.PBF) *PrimitiveBlock {
 
 		primblock.GroupType = int(grouptype)
 		pbfval.Pos = endpos
-		key, val = pbfval.ReadKey()
+		key, val = pbfval.ReadTag()
 	}
 	if key == 100 {
 		primblock.Config = NewConfig()
@@ -59,18 +59,18 @@ type LazyPrimitiveBlock struct {
 	TagsBool bool
 }
 
-func ReadLazyPrimitiveBlock(pbfval *pbf.PBF) LazyPrimitiveBlock {
+func ReadLazyPrimitiveBlock(pbfval *pbf.Reader) LazyPrimitiveBlock {
 	var lazyblock LazyPrimitiveBlock
-	key, val := pbfval.ReadKey()
+	key, val := pbfval.ReadTag()
 	if key == 1 && val == 2 {
 		size := pbfval.ReadVarint()
 		endpos := pbfval.Pos + size
 		pbfval.Pos = endpos
-		key, val = pbfval.ReadKey()
+		key, val = pbfval.ReadTag()
 	}
 	if key == 2 && val == 2 {
 		endpos := pbfval.Pos + pbfval.ReadVarint()
-		grouptype, _ := pbfval.ReadKey()
+		grouptype, _ := pbfval.ReadTag()
 		if grouptype == 1 {
 			lazyblock.Type = "Nodes"
 			pbfval.Pos -= 1
@@ -102,20 +102,20 @@ func ReadLazyPrimitiveBlock(pbfval *pbf.PBF) LazyPrimitiveBlock {
 	return lazyblock
 }
 
-func NewPrimitiveBlockLazy(pbfval *pbf.PBF) *PrimitiveBlock {
+func NewPrimitiveBlockLazy(pbfval *pbf.Reader) *PrimitiveBlock {
 	primblock := &PrimitiveBlock{}
 
-	key, val := pbfval.ReadKey()
+	key, val := pbfval.ReadTag()
 	if key == 1 && val == 2 {
 
 		size := pbfval.ReadVarint()
 		endpos := pbfval.Pos + size
 		pbfval.Pos = endpos
-		key, val = pbfval.ReadKey()
+		key, val = pbfval.ReadTag()
 	}
 	if key == 2 && val == 2 {
 		endpos := pbfval.Pos + pbfval.ReadVarint()
-		grouptype, _ := pbfval.ReadKey()
+		grouptype, _ := pbfval.ReadTag()
 		if grouptype == 2 {
 			pbfval.ReadVarint()
 		} else if grouptype == 3 {
@@ -126,7 +126,7 @@ func NewPrimitiveBlockLazy(pbfval *pbf.PBF) *PrimitiveBlock {
 
 		primblock.GroupType = int(grouptype)
 		pbfval.Pos = endpos
-		key, val = pbfval.ReadKey()
+		key, val = pbfval.ReadTag()
 	}
 	if key == 100 {
 		primblock.Config = NewConfig()

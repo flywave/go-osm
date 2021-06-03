@@ -17,7 +17,7 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	"github.com/murphy214/pbf"
+	"github.com/flywave/go-pbf"
 )
 
 const (
@@ -164,7 +164,7 @@ func ReadDecoder(f *os.File, limit int, writer *FeatureWriter) *Decoder {
 				if err != nil {
 					fmt.Println(err)
 				}
-				primblock := ReadLazyPrimitiveBlock(pbf.NewPBF(bytevals))
+				primblock := ReadLazyPrimitiveBlock(pbf.NewReader(bytevals))
 				primblock.Position = count
 				primblock.FilePos = index
 				c <- &primblock

@@ -1,11 +1,11 @@
 package osm
 
 import (
-	"github.com/murphy214/pbf"
+	"github.com/flywave/go-pbf"
 )
 
 func (d *Decoder) CreatePrimitiveBlock(lazy *LazyPrimitiveBlock) *PrimitiveBlock {
-	return &PrimitiveBlock{Buf: pbf.NewPBF(d.ReadDataPos(lazy.FilePos)), GroupIndex: lazy.BufPos, GroupType: 3}
+	return &PrimitiveBlock{Buf: pbf.NewReader(d.ReadDataPos(lazy.FilePos)), GroupIndex: lazy.BufPos, GroupType: 3}
 }
 
 func (d *Decoder) ReadWaysLazy(lazy *LazyPrimitiveBlock, idmap *IdMap) map[int]string {
@@ -14,29 +14,29 @@ func (d *Decoder) ReadWaysLazy(lazy *LazyPrimitiveBlock, idmap *IdMap) map[int]s
 	mymap := map[int]string{}
 
 	for prim.Buf.Pos < prim.GroupIndex[1] {
-		prim.Buf.ReadKey()
+		prim.Buf.ReadTag()
 		endpos2 := prim.Buf.Pos + prim.Buf.ReadVarint()
 
-		key, val := prim.Buf.ReadKey()
+		key, val := prim.Buf.ReadTag()
 		if key == 1 && val == 0 {
 			prim.Buf.ReadUInt64()
-			key, val = prim.Buf.ReadKey()
+			key, val = prim.Buf.ReadTag()
 		}
 		if key == 2 {
 			size := prim.Buf.ReadVarint()
 			prim.Buf.Pos += size
-			key, _ = prim.Buf.ReadKey()
+			key, _ = prim.Buf.ReadTag()
 		}
 		if key == 3 {
 			size := prim.Buf.ReadVarint()
 			prim.Buf.Pos += size
-			key, _ = prim.Buf.ReadKey()
+			key, _ = prim.Buf.ReadTag()
 		}
 
 		if key == 4 {
 			size := prim.Buf.ReadVarint()
 			prim.Buf.Pos += size
-			key, _ = prim.Buf.ReadKey()
+			key, _ = prim.Buf.ReadTag()
 		}
 
 		if key == 8 {
@@ -68,30 +68,30 @@ func (d *Decoder) ReadWaysLazyList(lazy *LazyPrimitiveBlock, ids []int) map[int]
 	var boolval bool
 	var id int
 	for prim.Buf.Pos < prim.GroupIndex[1] {
-		prim.Buf.ReadKey()
+		prim.Buf.ReadTag()
 		endpos2 := prim.Buf.Pos + prim.Buf.ReadVarint()
 
-		key, val := prim.Buf.ReadKey()
+		key, val := prim.Buf.ReadTag()
 		if key == 1 && val == 0 {
 			id = int(prim.Buf.ReadUInt64())
 			_, boolval = idmap[id]
-			key, val = prim.Buf.ReadKey()
+			key, val = prim.Buf.ReadTag()
 		}
 		if key == 2 {
 			size := prim.Buf.ReadVarint()
 			prim.Buf.Pos += size
-			key, _ = prim.Buf.ReadKey()
+			key, _ = prim.Buf.ReadTag()
 		}
 		if key == 3 {
 			size := prim.Buf.ReadVarint()
 			prim.Buf.Pos += size
-			key, _ = prim.Buf.ReadKey()
+			key, _ = prim.Buf.ReadTag()
 		}
 
 		if key == 4 {
 			size := prim.Buf.ReadVarint()
 			prim.Buf.Pos += size
-			key, _ = prim.Buf.ReadKey()
+			key, _ = prim.Buf.ReadTag()
 		}
 
 		if key == 8 {
@@ -116,36 +116,36 @@ func (d *Decoder) ReadWaysLazyList(lazy *LazyPrimitiveBlock, ids []int) map[int]
 	return mymap
 }
 
-func LazyWayRange(pbfval *pbf.PBF) (int, int) {
+func LazyWayRange(pbfval *pbf.Reader) (int, int) {
 	var start, pos, id int
 	for pbfval.Pos < pbfval.Length {
-		pbfval.ReadKey()
+		pbfval.ReadTag()
 		endpos2 := pbfval.Pos + pbfval.ReadVarint()
 
-		key, val := pbfval.ReadKey()
+		key, val := pbfval.ReadTag()
 
 		if key == 1 && val == 0 {
 			id = int(pbfval.ReadUInt64())
 			if pos == 0 {
 				start = id
 			}
-			key, val = pbfval.ReadKey()
+			key, val = pbfval.ReadTag()
 		}
 		if key == 2 {
 			size := pbfval.ReadVarint()
 			pbfval.Pos += size
-			key, _ = pbfval.ReadKey()
+			key, _ = pbfval.ReadTag()
 		}
 		if key == 3 {
 			size := pbfval.ReadVarint()
 			pbfval.Pos += size
-			key, _ = pbfval.ReadKey()
+			key, _ = pbfval.ReadTag()
 		}
 
 		if key == 4 {
 			size := pbfval.ReadVarint()
 			pbfval.Pos += size
-			key, _ = pbfval.ReadKey()
+			key, _ = pbfval.ReadTag()
 		}
 
 		if key == 8 {

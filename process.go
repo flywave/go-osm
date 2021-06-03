@@ -21,7 +21,7 @@ func (d *Decoder) ProcessBlockWay(lazy *LazyPrimitiveBlock) {
 
 				for i := range way.Keys {
 					keypos, valpos := way.Keys[i], way.Vals[i]
-					mymap[block.Stringtable.S[keypos]] = block.Stringtable.S[valpos]
+					mymap[string(block.Stringtable.S[keypos])] = block.Stringtable.S[valpos]
 				}
 				mymap["osm_id"] = int(way.GetId())
 
@@ -63,7 +63,7 @@ func (d *Decoder) ProcessBlockWay(lazy *LazyPrimitiveBlock) {
 					(*d.Writer).WriteFeature(feature)
 				}
 				wg.Done()
-			}(way)
+			}(&way)
 
 		}
 		wg.Wait()
@@ -365,7 +365,7 @@ func (d *Decoder) MakeColorWays() {
 				mymap := map[string]interface{}{}
 				for i := range way.Keys {
 					keypos, valpos := way.Keys[i], way.Vals[i]
-					mymap[block.Stringtable.S[keypos]] = block.Stringtable.S[valpos]
+					mymap[string(block.Stringtable.S[keypos])] = block.Stringtable.S[valpos]
 				}
 				refs := way.Refs
 				oldref := refs[0]

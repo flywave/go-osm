@@ -183,7 +183,7 @@ func (d *Decoder) CreateTestCaseBlock(key int, idmap map[int]string) {
 
 				roles := make([]string, len(way.RolesSid))
 				for pos, ri := range way.RolesSid {
-					roles[pos] = st[int(ri)]
+					roles[pos] = string(st[int(ri)])
 				}
 
 				inners := [][]int{}
@@ -264,7 +264,7 @@ func (d *Decoder) ProcessRelationBlock(key int, blockcount int) {
 		mymap := map[string]interface{}{}
 		for i := range way.Keys {
 			keypos, valpos := way.Keys[i], way.Vals[i]
-			mymap[st[keypos]] = st[valpos]
+			mymap[string(st[keypos])] = st[valpos]
 		}
 		if mymap["type"] == "multipolygon" {
 			for _, i := range newrefs {
@@ -318,7 +318,7 @@ func (d *Decoder) ProcessRelationBlock(key int, blockcount int) {
 
 		}
 
-		temp_relations = append(temp_relations, way)
+		temp_relations = append(temp_relations, &way)
 		if len(totalidmap) > d.Limit || ipos == sizerels-1 {
 
 			add_nodes := make([]int, len(totalidmap))
@@ -348,13 +348,13 @@ func (d *Decoder) ProcessRelationBlock(key int, blockcount int) {
 
 				roles := make([]string, len(way.RolesSid))
 				for pos, ri := range way.RolesSid {
-					roles[pos] = st[int(ri)]
+					roles[pos] = string(st[int(ri)])
 				}
 
 				mymap := map[string]interface{}{}
 				for i := range way.Keys {
 					keypos, valpos := way.Keys[i], way.Vals[i]
-					mymap[st[keypos]] = st[valpos]
+					mymap[string(st[keypos])] = st[valpos]
 				}
 
 				mymap["osm_id"] = int(way.Id)

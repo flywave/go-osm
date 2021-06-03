@@ -3,7 +3,7 @@ package osm
 import (
 	m "github.com/flywave/go-mapbox/tileid"
 
-	"github.com/murphy214/pbf"
+	"github.com/flywave/go-pbf"
 )
 
 type Config struct {
@@ -23,7 +23,7 @@ type DenseNode struct {
 	KeyValue    int
 	BoundingBox m.Extrema
 	Tags        []uint32
-	Buf         *pbf.PBF
+	Buf         *pbf.Reader
 }
 
 func NewConfig() Config {
@@ -31,7 +31,7 @@ func NewConfig() Config {
 }
 
 type tagUnpacker struct {
-	stringTable []string
+	stringTable [][]byte
 	keysVals    []int32
 	index       int
 }
@@ -51,10 +51,10 @@ func (tu *tagUnpacker) next() map[string]string {
 
 		if len(tu.stringTable) > keyID {
 
-			key = tu.stringTable[keyID]
+			key = string(tu.stringTable[keyID])
 		}
 		if len(tu.stringTable) > valID {
-			val = tu.stringTable[valID]
+			val = string(tu.stringTable[valID])
 		}
 		if (len(tu.stringTable) > keyID) && (len(tu.stringTable) > valID) {
 			tags[key] = val
@@ -68,40 +68,40 @@ func (prim *PrimitiveBlock) NewDenseNode() *DenseNode {
 	var tu *tagUnpacker
 
 	densenode := &DenseNode{NodeMap: map[int]*Node{}}
-	var idpbf, latpbf, longpbf *pbf.PBF
-	key, val := prim.Buf.ReadKey()
+	var idpbf, latpbf, longpbf *pbf.Reader
+	key, val := prim.Buf.ReadTag()
 	if key == 1 && val == 2 {
 		size := prim.Buf.ReadVarint()
 		endpos := prim.Buf.Pos + size
-		idpbf = pbf.NewPBF(prim.Buf.Pbf[prim.Buf.Pos:endpos])
+		idpbf = pbf.NewReader(prim.Buf.Pbf[prim.Buf.Pos:endpos])
 		prim.Buf.Pos += size
-		key, val = prim.Buf.ReadKey()
+		key, val = prim.Buf.ReadTag()
 	}
 	if key == 5 && val == 2 {
 		size := prim.Buf.ReadVarint()
 		densenode.DenseInfo = prim.Buf.Pos
 		prim.Buf.Pos += size
-		key, val = prim.Buf.ReadKey()
+		key, val = prim.Buf.ReadTag()
 	}
 	if key == 8 && val == 2 {
 		size := prim.Buf.ReadVarint()
 		endpos := prim.Buf.Pos + size
-		latpbf = pbf.NewPBF(prim.Buf.Pbf[prim.Buf.Pos:endpos])
+		latpbf = pbf.NewReader(prim.Buf.Pbf[prim.Buf.Pos:endpos])
 		prim.Buf.Pos += size
-		key, val = prim.Buf.ReadKey()
+		key, val = prim.Buf.ReadTag()
 	}
 	if key == 9 && val == 2 {
 		size := prim.Buf.ReadVarint()
 		endpos := prim.Buf.Pos + size
-		longpbf = pbf.NewPBF(prim.Buf.Pbf[prim.Buf.Pos:endpos])
+		longpbf = pbf.NewReader(prim.Buf.Pbf[prim.Buf.Pos:endpos])
 		prim.Buf.Pos += size
-		key, val = prim.Buf.ReadKey()
+		key, val = prim.Buf.ReadTag()
 	}
 	if key == 10 && val == 2 {
 		densenode.KeyValue = prim.Buf.Pos
 		tags := prim.Buf.ReadPackedInt32()
 		tu = &tagUnpacker{prim.StringTable, tags, 0}
-		key, val = prim.Buf.ReadKey()
+		key, val = prim.Buf.ReadTag()
 	}
 
 	var id, lat, long int
@@ -143,40 +143,40 @@ func (prim *PrimitiveBlock) NewDenseNode() *DenseNode {
 }
 
 func (d *Decoder) NewDenseNodeMap(lazy *LazyPrimitiveBlock) map[int][]float64 {
-	prim := NewPrimitiveBlockLazy(pbf.NewPBF(d.ReadDataPos(lazy.FilePos)))
+	prim := NewPrimitiveBlockLazy(pbf.NewReader(d.ReadDataPos(lazy.FilePos)))
 	prim.Buf.Pos = prim.GroupIndex[0]
 
-	var idpbf, latpbf, longpbf *pbf.PBF
-	key, val := prim.Buf.ReadKey()
+	var idpbf, latpbf, longpbf *pbf.Reader
+	key, val := prim.Buf.ReadTag()
 	if key == 1 && val == 2 {
 		size := prim.Buf.ReadVarint()
 		endpos := prim.Buf.Pos + size
-		idpbf = pbf.NewPBF(prim.Buf.Pbf[prim.Buf.Pos:endpos])
+		idpbf = pbf.NewReader(prim.Buf.Pbf[prim.Buf.Pos:endpos])
 		prim.Buf.Pos += size
-		key, val = prim.Buf.ReadKey()
+		key, val = prim.Buf.ReadTag()
 	}
 	if key == 5 && val == 2 {
 		size := prim.Buf.ReadVarint()
 		prim.Buf.Pos += size
-		key, val = prim.Buf.ReadKey()
+		key, val = prim.Buf.ReadTag()
 	}
 	if key == 8 && val == 2 {
 		size := prim.Buf.ReadVarint()
 		endpos := prim.Buf.Pos + size
-		latpbf = pbf.NewPBF(prim.Buf.Pbf[prim.Buf.Pos:endpos])
+		latpbf = pbf.NewReader(prim.Buf.Pbf[prim.Buf.Pos:endpos])
 		prim.Buf.Pos += size
-		key, val = prim.Buf.ReadKey()
+		key, val = prim.Buf.ReadTag()
 	}
 	if key == 9 && val == 2 {
 		size := prim.Buf.ReadVarint()
 		endpos := prim.Buf.Pos + size
-		longpbf = pbf.NewPBF(prim.Buf.Pbf[prim.Buf.Pos:endpos])
+		longpbf = pbf.NewReader(prim.Buf.Pbf[prim.Buf.Pos:endpos])
 		prim.Buf.Pos += size
-		key, val = prim.Buf.ReadKey()
+		key, val = prim.Buf.ReadTag()
 	}
 	if key == 10 && val == 2 {
 		prim.Buf.ReadPackedInt32()
-		key, val = prim.Buf.ReadKey()
+		key, val = prim.Buf.ReadTag()
 	}
 
 	var id, lat, long int
@@ -196,15 +196,15 @@ func (d *Decoder) NewDenseNodeMap(lazy *LazyPrimitiveBlock) map[int][]float64 {
 	return nodemap
 }
 
-func LazyDenseNode(pbfval *pbf.PBF) (int, int, bool) {
-	var idpbf *pbf.PBF
-	key, val := pbfval.ReadKey()
+func LazyDenseNode(pbfval *pbf.Reader) (int, int, bool) {
+	var idpbf *pbf.Reader
+	key, val := pbfval.ReadTag()
 	var startid, endid int
 
 	if key == 1 && val == 2 {
 		size := pbfval.ReadVarint()
 		endpos := pbfval.Pos + size
-		idpbf = pbf.NewPBF(pbfval.Pbf[pbfval.Pos:endpos])
+		idpbf = pbf.NewReader(pbfval.Pbf[pbfval.Pos:endpos])
 		id := 0
 		for i := 0; i < 8000 && idpbf.Pos < idpbf.Length; i++ {
 			id = id + int(idpbf.ReadSVarint())
@@ -214,22 +214,22 @@ func LazyDenseNode(pbfval *pbf.PBF) (int, int, bool) {
 		}
 		endid = id
 		pbfval.Pos = endpos
-		key, val = pbfval.ReadKey()
+		key, val = pbfval.ReadTag()
 	}
 	if key == 5 && val == 2 {
 		size := pbfval.ReadVarint()
 		pbfval.Pos += size
-		key, val = pbfval.ReadKey()
+		key, val = pbfval.ReadTag()
 	}
 	if key == 8 && val == 2 {
 		size := pbfval.ReadVarint()
 		pbfval.Pos += size
-		key, val = pbfval.ReadKey()
+		key, val = pbfval.ReadTag()
 	}
 	if key == 9 && val == 2 {
 		size := pbfval.ReadVarint()
 		pbfval.Pos += size
-		key, val = pbfval.ReadKey()
+		key, val = pbfval.ReadTag()
 	}
 	if key == 10 && val == 2 {
 		startpos := pbfval.Pos

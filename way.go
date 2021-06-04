@@ -18,28 +18,28 @@ func (d *Decoder) ReadWaysLazy(lazy *LazyPrimitiveBlock, idmap *IdMap) map[int]s
 		endpos2 := prim.Buf.Pos + prim.Buf.ReadVarint()
 
 		key, val := prim.Buf.ReadTag()
-		if key == 1 && val == 0 {
+		if key == WAY_ID && val == pbf.Varint {
 			prim.Buf.ReadUInt64()
 			key, val = prim.Buf.ReadTag()
 		}
-		if key == 2 {
+		if key == WAY_KEYS {
 			size := prim.Buf.ReadVarint()
 			prim.Buf.Pos += size
 			key, _ = prim.Buf.ReadTag()
 		}
-		if key == 3 {
-			size := prim.Buf.ReadVarint()
-			prim.Buf.Pos += size
-			key, _ = prim.Buf.ReadTag()
-		}
-
-		if key == 4 {
+		if key == WAY_VALS {
 			size := prim.Buf.ReadVarint()
 			prim.Buf.Pos += size
 			key, _ = prim.Buf.ReadTag()
 		}
 
-		if key == 8 {
+		if key == WAY_INFO {
+			size := prim.Buf.ReadVarint()
+			prim.Buf.Pos += size
+			key, _ = prim.Buf.ReadTag()
+		}
+
+		if key == WAY_REFS {
 			size := prim.Buf.ReadVarint()
 			endpos := prim.Buf.Pos + size
 			var x int
@@ -72,29 +72,29 @@ func (d *Decoder) ReadWaysLazyList(lazy *LazyPrimitiveBlock, ids []int) map[int]
 		endpos2 := prim.Buf.Pos + prim.Buf.ReadVarint()
 
 		key, val := prim.Buf.ReadTag()
-		if key == 1 && val == 0 {
+		if key == WAY_ID && val == pbf.Varint {
 			id = int(prim.Buf.ReadUInt64())
 			_, boolval = idmap[id]
 			key, val = prim.Buf.ReadTag()
 		}
-		if key == 2 {
+		if key == WAY_KEYS {
 			size := prim.Buf.ReadVarint()
 			prim.Buf.Pos += size
 			key, _ = prim.Buf.ReadTag()
 		}
-		if key == 3 {
-			size := prim.Buf.ReadVarint()
-			prim.Buf.Pos += size
-			key, _ = prim.Buf.ReadTag()
-		}
-
-		if key == 4 {
+		if key == WAY_VALS {
 			size := prim.Buf.ReadVarint()
 			prim.Buf.Pos += size
 			key, _ = prim.Buf.ReadTag()
 		}
 
-		if key == 8 {
+		if key == WAY_INFO {
+			size := prim.Buf.ReadVarint()
+			prim.Buf.Pos += size
+			key, _ = prim.Buf.ReadTag()
+		}
+
+		if key == WAY_REFS {
 			size := prim.Buf.ReadVarint()
 			endpos := prim.Buf.Pos + size
 			if boolval {
@@ -124,31 +124,31 @@ func LazyWayRange(pbfval *pbf.Reader) (int, int) {
 
 		key, val := pbfval.ReadTag()
 
-		if key == 1 && val == 0 {
+		if key == WAY_ID && val == pbf.Varint {
 			id = int(pbfval.ReadUInt64())
 			if pos == 0 {
 				start = id
 			}
 			key, val = pbfval.ReadTag()
 		}
-		if key == 2 {
+		if key == WAY_KEYS {
 			size := pbfval.ReadVarint()
 			pbfval.Pos += size
 			key, _ = pbfval.ReadTag()
 		}
-		if key == 3 {
-			size := pbfval.ReadVarint()
-			pbfval.Pos += size
-			key, _ = pbfval.ReadTag()
-		}
-
-		if key == 4 {
+		if key == WAY_VALS {
 			size := pbfval.ReadVarint()
 			pbfval.Pos += size
 			key, _ = pbfval.ReadTag()
 		}
 
-		if key == 8 {
+		if key == WAY_INFO {
+			size := pbfval.ReadVarint()
+			pbfval.Pos += size
+			key, _ = pbfval.ReadTag()
+		}
+
+		if key == WAY_REFS {
 			size := pbfval.ReadVarint()
 			endpos := pbfval.Pos + size
 			pbfval.Pos = endpos

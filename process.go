@@ -20,7 +20,8 @@ func (d *Decoder) ProcessBlockWay(lazy *LazyPrimitiveBlock) {
 				mymap := map[string]interface{}{}
 
 				for i := range way.Keys {
-					keypos, valpos := way.Keys[i], way.Vals[i]
+					keypos := way.Keys[i]
+					valpos := way.Vals[i]
 					mymap[string(block.Stringtable.S[keypos])] = block.Stringtable.S[valpos]
 				}
 				mymap["osm_id"] = int(way.GetId())
@@ -64,10 +65,8 @@ func (d *Decoder) ProcessBlockWay(lazy *LazyPrimitiveBlock) {
 				}
 				wg.Done()
 			}(&way)
-
 		}
 		wg.Wait()
-
 	}
 }
 

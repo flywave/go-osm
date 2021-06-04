@@ -1,5 +1,7 @@
 package osm
 
+import "github.com/flywave/go-pbf"
+
 func (d *Decoder) ReadRelationsLazy(lazy *LazyPrimitiveBlock) map[int]int {
 	prim := d.CreatePrimitiveBlock(lazy)
 	prim.Buf.Pos = prim.GroupIndex[0]
@@ -11,32 +13,32 @@ func (d *Decoder) ReadRelationsLazy(lazy *LazyPrimitiveBlock) map[int]int {
 
 		key, val := prim.Buf.ReadTag()
 
-		if key == 1 && val == 0 {
+		if key == RELATION_ID && val == pbf.Varint {
 			prim.Buf.ReadUInt64()
 			key, val = prim.Buf.ReadTag()
 		}
-		if key == 2 {
+		if key == RELATION_KEYS {
 			size := prim.Buf.ReadVarint()
 			prim.Buf.Pos += size
 			key, _ = prim.Buf.ReadTag()
 		}
-		if key == 3 {
+		if key == RELATION_VALS {
 			size := prim.Buf.ReadVarint()
 			prim.Buf.Pos += size
 			key, _ = prim.Buf.ReadTag()
 		}
-		if key == 4 {
+		if key == RELATION_INFO {
 			size := prim.Buf.ReadVarint()
 			prim.Buf.Pos += size
 			key, _ = prim.Buf.ReadTag()
 		}
-		if key == 8 {
+		if key == RELATION_ROLES_SID {
 			size := prim.Buf.ReadVarint()
 			endpos := prim.Buf.Pos + size
 			prim.Buf.Pos = endpos
 			key, _ = prim.Buf.ReadTag()
 		}
-		if key == 9 {
+		if key == RELATION_MEMIDS {
 			size := prim.Buf.ReadVarint()
 			endpos := prim.Buf.Pos + size
 			var x int
@@ -44,7 +46,6 @@ func (d *Decoder) ReadRelationsLazy(lazy *LazyPrimitiveBlock) map[int]int {
 				x += int(prim.Buf.ReadSVarint())
 				mymap[d.WayIdMap.GetBlock(x)] = 0
 			}
-
 		}
 		prim.Buf.Pos = endpos2
 	}

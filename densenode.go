@@ -70,34 +70,34 @@ func (prim *PrimitiveBlock) NewDenseNode() *DenseNode {
 	densenode := &DenseNode{NodeMap: map[int]*Node{}}
 	var idpbf, latpbf, longpbf *pbf.Reader
 	key, val := prim.Buf.ReadTag()
-	if key == 1 && val == 2 {
+	if key == DENSE_NODE_ID && val == pbf.Bytes {
 		size := prim.Buf.ReadVarint()
 		endpos := prim.Buf.Pos + size
 		idpbf = pbf.NewReader(prim.Buf.Pbf[prim.Buf.Pos:endpos])
 		prim.Buf.Pos += size
 		key, val = prim.Buf.ReadTag()
 	}
-	if key == 5 && val == 2 {
+	if key == DENSE_NODE_INFO && val == pbf.Bytes {
 		size := prim.Buf.ReadVarint()
 		densenode.DenseInfo = prim.Buf.Pos
 		prim.Buf.Pos += size
 		key, val = prim.Buf.ReadTag()
 	}
-	if key == 8 && val == 2 {
+	if key == DENSE_NODE_LAT && val == pbf.Bytes {
 		size := prim.Buf.ReadVarint()
 		endpos := prim.Buf.Pos + size
 		latpbf = pbf.NewReader(prim.Buf.Pbf[prim.Buf.Pos:endpos])
 		prim.Buf.Pos += size
 		key, val = prim.Buf.ReadTag()
 	}
-	if key == 9 && val == 2 {
+	if key == DENSE_NODE_LON && val == pbf.Bytes {
 		size := prim.Buf.ReadVarint()
 		endpos := prim.Buf.Pos + size
 		longpbf = pbf.NewReader(prim.Buf.Pbf[prim.Buf.Pos:endpos])
 		prim.Buf.Pos += size
 		key, val = prim.Buf.ReadTag()
 	}
-	if key == 10 && val == 2 {
+	if key == DENSE_NODE_KEYS_VALS && val == pbf.Bytes {
 		densenode.KeyValue = prim.Buf.Pos
 		tags := prim.Buf.ReadPackedInt32()
 		tu = &tagUnpacker{prim.StringTable, tags, 0}
@@ -148,33 +148,33 @@ func (d *Decoder) NewDenseNodeMap(lazy *LazyPrimitiveBlock) map[int][]float64 {
 
 	var idpbf, latpbf, longpbf *pbf.Reader
 	key, val := prim.Buf.ReadTag()
-	if key == 1 && val == 2 {
+	if key == DENSE_NODE_ID && val == pbf.Bytes {
 		size := prim.Buf.ReadVarint()
 		endpos := prim.Buf.Pos + size
 		idpbf = pbf.NewReader(prim.Buf.Pbf[prim.Buf.Pos:endpos])
 		prim.Buf.Pos += size
 		key, val = prim.Buf.ReadTag()
 	}
-	if key == 5 && val == 2 {
+	if key == DENSE_NODE_INFO && val == pbf.Bytes {
 		size := prim.Buf.ReadVarint()
 		prim.Buf.Pos += size
 		key, val = prim.Buf.ReadTag()
 	}
-	if key == 8 && val == 2 {
+	if key == DENSE_NODE_LAT && val == pbf.Bytes {
 		size := prim.Buf.ReadVarint()
 		endpos := prim.Buf.Pos + size
 		latpbf = pbf.NewReader(prim.Buf.Pbf[prim.Buf.Pos:endpos])
 		prim.Buf.Pos += size
 		key, val = prim.Buf.ReadTag()
 	}
-	if key == 9 && val == 2 {
+	if key == DENSE_NODE_LON && val == pbf.Bytes {
 		size := prim.Buf.ReadVarint()
 		endpos := prim.Buf.Pos + size
 		longpbf = pbf.NewReader(prim.Buf.Pbf[prim.Buf.Pos:endpos])
 		prim.Buf.Pos += size
 		key, val = prim.Buf.ReadTag()
 	}
-	if key == 10 && val == 2 {
+	if key == DENSE_NODE_KEYS_VALS && val == pbf.Bytes {
 		prim.Buf.ReadPackedInt32()
 		key, val = prim.Buf.ReadTag()
 	}
@@ -201,7 +201,7 @@ func LazyDenseNode(pbfval *pbf.Reader) (int, int, bool) {
 	key, val := pbfval.ReadTag()
 	var startid, endid int
 
-	if key == 1 && val == 2 {
+	if key == DENSE_NODE_ID && val == pbf.Bytes {
 		size := pbfval.ReadVarint()
 		endpos := pbfval.Pos + size
 		idpbf = pbf.NewReader(pbfval.Pbf[pbfval.Pos:endpos])
@@ -216,22 +216,22 @@ func LazyDenseNode(pbfval *pbf.Reader) (int, int, bool) {
 		pbfval.Pos = endpos
 		key, val = pbfval.ReadTag()
 	}
-	if key == 5 && val == 2 {
+	if key == DENSE_NODE_INFO && val == pbf.Bytes {
 		size := pbfval.ReadVarint()
 		pbfval.Pos += size
 		key, val = pbfval.ReadTag()
 	}
-	if key == 8 && val == 2 {
+	if key == DENSE_NODE_LAT && val == pbf.Bytes {
 		size := pbfval.ReadVarint()
 		pbfval.Pos += size
 		key, val = pbfval.ReadTag()
 	}
-	if key == 9 && val == 2 {
+	if key == DENSE_NODE_LON && val == pbf.Bytes {
 		size := pbfval.ReadVarint()
 		pbfval.Pos += size
 		key, val = pbfval.ReadTag()
 	}
-	if key == 10 && val == 2 {
+	if key == DENSE_NODE_KEYS_VALS && val == pbf.Bytes {
 		startpos := pbfval.Pos
 		pbfval.ReadPackedInt32()
 		sizevals := pbfval.Pos - startpos

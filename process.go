@@ -60,7 +60,7 @@ func (d *Decoder) ProcessBlockWay(lazy *LazyPrimitiveBlock) {
 				}
 
 				if d.WriteBool {
-					(*d.Writer).WriteFeature(feature)
+					d.Writer.WriteFeature(feature)
 				}
 				wg.Done()
 			}(&way)
@@ -123,7 +123,7 @@ func (d *Decoder) ProcessDenseNode(lazy *LazyPrimitiveBlock) {
 			feature := geom.NewPointFeature([]float64{longitude, latitude})
 			feature.Properties = mymap
 			if d.WriteBool {
-				(*d.Writer).WriteFeature(feature)
+				d.Writer.WriteFeature(feature)
 			}
 		}
 	}
@@ -338,7 +338,7 @@ func (d *Decoder) MakeColorDenseNodes() {
 			feature := geom.NewPointFeature([]float64{longitude, latitude})
 			feature.Properties = mymap
 			if d.WriteBool {
-				(*d.Writer).WriteFeature(feature)
+				d.Writer.WriteFeature(feature)
 			}
 
 		}
@@ -388,7 +388,7 @@ func (d *Decoder) MakeColorWays() {
 
 				feature := geom.NewLineStringFeature(line)
 				feature.Properties = mymap
-				(*d.Writer).WriteFeature(feature)
+				d.Writer.WriteFeature(feature)
 			}
 		}
 		pos++

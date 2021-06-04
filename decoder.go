@@ -69,7 +69,7 @@ type Decoder struct {
 	NodeMap     *NodeMap
 	RelationMap map[int]string
 	Limit       int
-	Writer      *FeatureWriter
+	Writer      FeatureWriter
 	WriteBool   bool
 	TotalMemory int
 	cancel      func()
@@ -84,7 +84,7 @@ type Decoder struct {
 	f       *os.File
 }
 
-func NewDecoder(f *os.File, limit int, writer *FeatureWriter) *Decoder {
+func NewDecoder(f *os.File, limit int, writer FeatureWriter) *Decoder {
 	return &Decoder{
 		r:           f,
 		f:           f,
@@ -134,8 +134,7 @@ func (dec *Decoder) ReadBlock(lazyprim LazyPrimitiveBlock) *osmpbf.PrimitiveBloc
 	return primblock
 }
 
-func ReadDecoder(f *os.File, limit int, writer *FeatureWriter) *Decoder {
-
+func ReadDecoder(f *os.File, limit int, writer FeatureWriter) *Decoder {
 	d := NewDecoder(f, limit, writer)
 	sizeBuf := make([]byte, 4)
 	headerBuf := make([]byte, MaxBlobHeaderSize)
@@ -205,7 +204,7 @@ func ReadDecoder(f *os.File, limit int, writer *FeatureWriter) *Decoder {
 	return d
 }
 
-func MakeOutputWriter(infilename string, writer *FeatureWriter, limit int) {
+func MakeOutputWriter(infilename string, writer FeatureWriter, limit int) {
 	f, _ := os.Open(infilename)
 	d := ReadDecoder(f, limit, writer)
 	d.ProcessFile()

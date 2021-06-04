@@ -408,13 +408,13 @@ func (d *Decoder) ProcessRelationBlock(key int, blockcount int) {
 							featpolygon := geom.NewPolygonFeature(polygons[0])
 							featpolygon.Properties = mymap
 							if d.WriteBool {
-								(*d.Writer).WriteFeature(featpolygon)
+								d.Writer.WriteFeature(featpolygon)
 							}
 						} else {
 							featpolygon := geom.NewMultiPolygonFeature(polygons...)
 							featpolygon.Properties = mymap
 							if d.WriteBool {
-								(*d.Writer).WriteFeature(featpolygon)
+								d.Writer.WriteFeature(featpolygon)
 							}
 						}
 					}

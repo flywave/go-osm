@@ -25,20 +25,17 @@ func (d *Decoder) ReadRelationsLazy(lazy *LazyPrimitiveBlock) map[int]int {
 			prim.Buf.Pos += size
 			key, _ = prim.Buf.ReadTag()
 		}
-
 		if key == 4 {
 			size := prim.Buf.ReadVarint()
 			prim.Buf.Pos += size
 			key, _ = prim.Buf.ReadTag()
 		}
-
 		if key == 8 {
 			size := prim.Buf.ReadVarint()
 			endpos := prim.Buf.Pos + size
 			prim.Buf.Pos = endpos
 			key, _ = prim.Buf.ReadTag()
 		}
-
 		if key == 9 {
 			size := prim.Buf.ReadVarint()
 			endpos := prim.Buf.Pos + size

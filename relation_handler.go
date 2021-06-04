@@ -126,7 +126,6 @@ func (d *Decoder) CreateTestCaseBlock(key int, idmap map[int]string) {
 			for _, i := range newrefs {
 				waymap[d.WayIdMap.GetBlock(i)] = append(waymap[d.WayIdMap.GetBlock(i)], i)
 			}
-
 		}
 
 		totalwaynodemap := map[int][]int{}
@@ -234,7 +233,6 @@ func (d *Decoder) CreateTestCaseBlock(key int, idmap map[int]string) {
 
 				outfilenodemap := fmt.Sprintf("test_cases/%d_nodemap.gob", int(way.Id))
 				ioutil.WriteFile(outfilenodemap, network2.Bytes(), 0677)
-
 			}
 		}
 	}
@@ -273,12 +271,10 @@ func (d *Decoder) ProcessRelationBlock(key int, blockcount int) {
 			}
 		} else {
 		}
-
 	}
 
 	totalwaynodemap := map[int][]int{}
 	for k, v := range waymap {
-
 		val, boolval := d.Ways[k]
 		if boolval {
 			tempwaynodemap := d.ReadWaysLazyList(val, v)
@@ -308,14 +304,12 @@ func (d *Decoder) ProcessRelationBlock(key int, blockcount int) {
 		}
 
 		for _, i := range newrefs {
-
 			vals, boolval := totalwaynodemap[i]
 			if boolval {
 				for _, nodeid := range vals {
 					totalidmap[d.IdMap.GetBlock(nodeid)] = ""
 				}
 			}
-
 		}
 
 		temp_relations = append(temp_relations, &way)
@@ -429,7 +423,6 @@ func (d *Decoder) ProcessRelationBlock(key int, blockcount int) {
 			temp_relations = []*osmpbf.Relation{}
 			totalidmap = map[int]string{}
 		}
-
 	}
 }
 

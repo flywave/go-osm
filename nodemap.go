@@ -197,5 +197,4 @@ func (d *Decoder) AddUpdates(stringval []int) {
 	}
 
 	d.NodeMap = hits
-
 }

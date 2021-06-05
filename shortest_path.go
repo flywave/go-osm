@@ -191,6 +191,9 @@ func (pathing *Pathing) TotalDif() int {
 }
 
 func (pathing *Pathing) Path() {
+	if len(pathing.WayBlocks) == 0 {
+		return
+	}
 	wayblock := pathing.GetTopDif()
 	pathing.AddRemove(wayblock)
 	totalmapsize := len(pathing.TotalMap)

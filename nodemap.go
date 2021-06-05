@@ -58,7 +58,7 @@ func (hits *NodeMap) AddUpdate(stringval int) bool {
 }
 
 func NewNodeMap(limit int) *NodeMap {
-	return &NodeMap{HitMap: map[int]int{}, Limit: limit, NodeMap: map[int]map[int][]float64{}}
+	return &NodeMap{HitMap: make(map[int]int), Limit: limit, NodeMap: make(map[int]map[int][]float64)}
 }
 
 func (d *Decoder) EmptyNodeMap() {
@@ -195,6 +195,4 @@ func (d *Decoder) AddUpdates(stringval []int) {
 			hits.HitMap[output.Position] = output.Priority
 		}
 	}
-
-	d.NodeMap = hits
 }

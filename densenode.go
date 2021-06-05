@@ -12,11 +12,6 @@ type Config struct {
 	LonOffset   int
 }
 
-type Node struct {
-	Tags  map[string]string
-	Point []float64
-}
-
 type DenseNode struct {
 	NodeMap     map[int]*Node
 	DenseInfo   int
@@ -36,8 +31,8 @@ type tagUnpacker struct {
 	index       int
 }
 
-func (tu *tagUnpacker) next() map[string]string {
-	tags := make(map[string]string)
+func (tu *tagUnpacker) next() Tags {
+	tags := make(Tags)
 	var key, val string
 	for tu.index < len(tu.keysVals) {
 		keyID := int(tu.keysVals[tu.index])
@@ -113,12 +108,11 @@ func (prim *PrimitiveBlock) NewDenseNode() *DenseNode {
 		id = id + int(idpbf.ReadSVarint())
 		lat = lat + int(latpbf.ReadSVarint())
 		long = long + int(longpbf.ReadSVarint())
-		pt = []float64{
-			(float64(prim.Config.LonOffset+(long*prim.Config.Granularity)) * 1e-9),
-			(float64(prim.Config.LatOffset+(lat*prim.Config.Granularity)) * 1e-9),
-		}
 
-		densenode.NodeMap[id] = &Node{Point: pt, Tags: tags}
+		flong := (float64(prim.Config.LonOffset+(long*prim.Config.Granularity)) * 1e-9)
+		flat := (float64(prim.Config.LatOffset+(lat*prim.Config.Granularity)) * 1e-9)
+
+		densenode.NodeMap[id] = &Node{Lat: flat, Long: flong, Element: Element{ID: int64(id), Tags: tags}}
 
 		x, y := pt[0], pt[1]
 
@@ -193,6 +187,7 @@ func (d *Decoder) NewDenseNodeMap(lazy *LazyPrimitiveBlock) map[int][]float64 {
 
 		nodemap[id] = pt
 	}
+
 	return nodemap
 }
 

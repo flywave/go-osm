@@ -22,7 +22,7 @@ func (w *TestWriter) WriteFeature(feature *geom.Feature) error {
 
 func TestDecoder(t *testing.T) {
 	w := &TestWriter{}
-	MakeOutputWriter("./testdata/sample.pbf", w, int(math.MaxInt32))
+	MakeOutputWriter("./testdata/sample.pbf", w, int(math.MaxInt64))
 
 	if len(w.cache) == 0 {
 		t.FailNow()

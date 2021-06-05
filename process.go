@@ -2,7 +2,7 @@ package osm
 
 import (
 	"github.com/flywave/go-geom"
-	"github.com/flywave/go-osm/osmpbf"
+	osmpbf "github.com/flywave/go-osm/osmpbf"
 
 	"sync"
 

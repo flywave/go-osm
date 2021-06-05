@@ -285,17 +285,14 @@ func GetData(blob *osmpbf.Blob) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
+		buf := make([]byte, blob.GetRawSize())
+		_, err = io.ReadFull(r, buf)
 
-		buf := bytes.NewBuffer(make([]byte, 0, blob.GetRawSize()+bytes.MinRead))
-		if _, err = buf.ReadFrom(r); err != nil {
-			return nil, err
+		if len(buf) != int(blob.GetRawSize()) {
+			return nil, fmt.Errorf("raw blob data size %d but expected %d", len(buf), blob.GetRawSize())
 		}
 
-		if buf.Len() != int(blob.GetRawSize()) {
-			return nil, fmt.Errorf("raw blob data size %d but expected %d", buf.Len(), blob.GetRawSize())
-		}
-
-		return buf.Bytes(), nil
+		return buf, nil
 	default:
 		return nil, errors.New("unknown blob data")
 	}

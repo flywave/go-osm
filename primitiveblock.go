@@ -12,10 +12,20 @@ type PrimitiveBlock struct {
 	Config      Config
 }
 
+type stringTable []string
+
+func newStringTable(source [][]byte) stringTable {
+	result := make(stringTable, len(source))
+	for i, bytes := range source {
+		result[i] = string(bytes)
+	}
+	return result
+}
+
 func NewPrimitiveBlock(pbfval *pbf.Reader) *PrimitiveBlock {
 	primblock := &PrimitiveBlock{}
 	key, val := pbfval.ReadTag()
-	if key == 1 && val == 2 {
+	if key == PRIMITIVE_BLOCK_STRINGTABLE && val == pbf.Bytes {
 		size := pbfval.ReadVarint()
 		endpos := pbfval.Pos + size
 		for pbfval.Pos < endpos {
@@ -26,7 +36,7 @@ func NewPrimitiveBlock(pbfval *pbf.Reader) *PrimitiveBlock {
 		pbfval.Pos = endpos
 		key, val = pbfval.ReadTag()
 	}
-	if key == 2 && val == 2 {
+	if key == PRIMITIVE_BLOCK_PRIMITIVEGROUP && val == pbf.Bytes {
 		endpos := pbfval.Pos + pbfval.ReadVarint()
 		grouptype, _ := pbfval.ReadTag()
 		if grouptype == 2 {
@@ -62,13 +72,13 @@ type LazyPrimitiveBlock struct {
 func ReadLazyPrimitiveBlock(pbfval *pbf.Reader) LazyPrimitiveBlock {
 	var lazyblock LazyPrimitiveBlock
 	key, val := pbfval.ReadTag()
-	if key == 1 && val == 2 {
+	if key == PRIMITIVE_BLOCK_STRINGTABLE && val == pbf.Bytes {
 		size := pbfval.ReadVarint()
 		endpos := pbfval.Pos + size
 		pbfval.Pos = endpos
 		key, val = pbfval.ReadTag()
 	}
-	if key == 2 && val == 2 {
+	if key == PRIMITIVE_BLOCK_PRIMITIVEGROUP && val == pbf.Bytes {
 		endpos := pbfval.Pos + pbfval.ReadVarint()
 		grouptype, _ := pbfval.ReadTag()
 		if grouptype == 1 {
@@ -106,14 +116,14 @@ func NewPrimitiveBlockLazy(pbfval *pbf.Reader) *PrimitiveBlock {
 	primblock := &PrimitiveBlock{}
 
 	key, val := pbfval.ReadTag()
-	if key == 1 && val == 2 {
+	if key == PRIMITIVE_BLOCK_STRINGTABLE && val == pbf.Bytes {
 
 		size := pbfval.ReadVarint()
 		endpos := pbfval.Pos + size
 		pbfval.Pos = endpos
 		key, val = pbfval.ReadTag()
 	}
-	if key == 2 && val == 2 {
+	if key == PRIMITIVE_BLOCK_PRIMITIVEGROUP && val == pbf.Bytes {
 		endpos := pbfval.Pos + pbfval.ReadVarint()
 		grouptype, _ := pbfval.ReadTag()
 		if grouptype == 2 {

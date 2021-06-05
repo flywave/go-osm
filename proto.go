@@ -103,14 +103,6 @@ const (
 	WAY_REFS pbf.TagType = 8
 )
 
-type MemberType uint32
-
-const (
-	NODE     MemberType = 0
-	WAY      MemberType = 1
-	RELATION MemberType = 2
-)
-
 const (
 	RELATION_ID        pbf.TagType = 1
 	RELATION_KEYS      pbf.TagType = 2

@@ -103,8 +103,10 @@ func NewDecoder(f *os.File, limit int, writer FeatureWriter) *Decoder {
 }
 
 func (dec *Decoder) Close() error {
-	dec.cancel()
-	dec.wg.Wait()
+	if dec.cancel != nil {
+		dec.cancel()
+		dec.wg.Wait()
+	}
 	return nil
 }
 
